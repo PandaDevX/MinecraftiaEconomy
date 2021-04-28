@@ -1,0 +1,18 @@
+# enable to allow negative balance
+
+# loan - will let player have negative balance ( same with bank ).
+
+# usage
+#   - true ( let player have negative balance
+#   - false ( never allow anyone to have negative balance
+
+# exception - admin commands ( you can always set the amount whatever you want )
+loans: false
+
+# database
+MySQL:
+  host: 'locahost'
+  port: '3306'
+  database: 'mydb'
+  user: 'user'
+  pass: ''

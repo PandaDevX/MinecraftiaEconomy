@@ -1,0 +1,15 @@
+name: Minecraftia Economy
+version: ${project.version}
+main: com.redspeaks.minecraftiaeconomy.MinecraftiaEconomy
+api-version: 1.16
+commands:
+   balance:
+      description: balance of all the players
+   balancetop:
+      description: top 10 richest players
+   pay:
+      description: usage to pay other player
+   money:
+      description: admin command
+   bank:
+      description: admin command
