@@ -246,6 +246,15 @@ public final class MinecraftiaEconomy extends JavaPlugin {
             }
 
             @Override
+            public boolean transferBalance(OfflinePlayer sender, String recipient, double amount) {
+                if(withdraw(sender, amount)) {
+                    MinecraftiaEconomyManager.getBank().deposit(recipient, amount);
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
             public Optional<Double> getTotalBalance(OfflinePlayer player) {
                 double wallet = getBalance(player).orElse(0D);
                 if(hasBankAccount(player)) {

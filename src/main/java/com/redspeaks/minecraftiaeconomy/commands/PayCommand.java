@@ -1,6 +1,5 @@
 package com.redspeaks.minecraftiaeconomy.commands;
 
-import com.redspeaks.minecraftiaeconomy.MinecraftiaEconomy;
 import com.redspeaks.minecraftiaeconomy.api.AbstractCommand;
 import com.redspeaks.minecraftiaeconomy.api.ChatUtil;
 import com.redspeaks.minecraftiaeconomy.api.CommandInfo;
@@ -42,30 +41,26 @@ public class PayCommand extends AbstractCommand {
                 } else {
                     player.sendMessage(ChatUtil.colorize("&7Insufficient &cbalance"));
                 }
-                String bankName = args[2];
-                Optional<String> playerBank = MinecraftiaEconomyManager.getBank(player);
-                Optional<String> playerExtraBank = MinecraftiaEconomyManager.getExtraBank(player);
-                if(!playerBank.orElse("").equalsIgnoreCase(bankName) && !playerExtraBank.orElse("").equalsIgnoreCase(bankName)) {
-                    player.sendMessage(ChatUtil.colorize("&7No matching &c" + args[2] + " &7from your bank accounts"));
-                    return;
-                }
-                if(MinecraftiaEconomyManager.getBank().transfer(bankName, target.get(), amount)) {
-                    if (MinecraftiaEconomyManager.getBank().transfer(bank.get(), target.get(), amount)) {
-                        player.sendMessage(ChatUtil.colorize("&7Successfully sent &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix() + " &7to player: &f" + target.get().getName()));
-                        if (target.get().isOnline()) {
-                            target.get().getPlayer().sendMessage(ChatUtil.colorize("&7Player: &f" + player.getDisplayName() + " &7sent you &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix()));
-                        }
-                    } else {
-                        player.sendMessage(ChatUtil.colorize("&7Insufficient &cbalance"));
-                    }
-                    return;
-                }
+            }
+            String bankName = args[2];
+            Optional<String> playerBank = MinecraftiaEconomyManager.getBank(player);
+            Optional<String> playerExtraBank = MinecraftiaEconomyManager.getExtraBank(player);
+            if(!playerBank.orElse("").equalsIgnoreCase(bankName) && !playerExtraBank.orElse("").equalsIgnoreCase(bankName)) {
+                player.sendMessage(ChatUtil.colorize("&7No matching &c" + args[2] + " &7from your bank accounts"));
                 return;
+            }
+            if (MinecraftiaEconomyManager.getBank().transfer(bankName, target.get(), amount)) {
+                player.sendMessage(ChatUtil.colorize("&7Successfully sent &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix() + " &7to player: &f" + target.get().getName()));
+                if (target.get().isOnline()) {
+                    target.get().getPlayer().sendMessage(ChatUtil.colorize("&7Player: &f" + player.getDisplayName() + " &7sent you &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix()));
+                }
+            } else {
+                player.sendMessage(ChatUtil.colorize("&7Insufficient &cbalance"));
             }
         } else {
             if(args.length != 3) {
-                if (MinecraftiaEconomyManager.getBank().transfer(bank.get(), bank.get(), amount)) {
-                    player.sendMessage(ChatUtil.colorize("&7Successfully sent &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix() + " &7to player: &f" + target.get().getName()));
+                if (MinecraftiaEconomyManager.getEconomy().transferBalance(player, bank.get(), amount)) {
+                    player.sendMessage(ChatUtil.colorize("&7Successfully sent &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix() + " &7to bank: &f" + bank.get()));
                     if (target.get().isOnline()) {
                         target.get().getPlayer().sendMessage(ChatUtil.colorize("&7Player: &f" + player.getDisplayName() + " &7sent you &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix()));
                     }
@@ -81,16 +76,13 @@ public class PayCommand extends AbstractCommand {
                 player.sendMessage(ChatUtil.colorize("&7No matching &c" + args[2] + " &7from your bank accounts"));
                 return;
             }
-            if(MinecraftiaEconomyManager.getBank().transfer(bankName, bank.get(), amount)) {
-                if (MinecraftiaEconomyManager.getBank().transfer(bank.get(), target.get(), amount)) {
-                    player.sendMessage(ChatUtil.colorize("&7Successfully sent &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix() + " &7to player: &f" + target.get().getName()));
-                    if (target.get().isOnline()) {
-                        target.get().getPlayer().sendMessage(ChatUtil.colorize("&7Player: &f" + player.getDisplayName() + " &7sent you &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix()));
-                    }
-                } else {
-                    player.sendMessage(ChatUtil.colorize("&7Insufficient &cbalance"));
+            if (MinecraftiaEconomyManager.getBank().transfer(bankName, bank.get(), amount)) {
+                player.sendMessage(ChatUtil.colorize("&7Successfully sent &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix() + " &7to player: &f" + target.get().getName()));
+                if (target.get().isOnline()) {
+                    target.get().getPlayer().sendMessage(ChatUtil.colorize("&7Player: &f" + player.getDisplayName() + " &7sent you &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix()));
                 }
-                return;
+            } else {
+                player.sendMessage(ChatUtil.colorize("&7Insufficient &cbalance"));
             }
         }
         return;

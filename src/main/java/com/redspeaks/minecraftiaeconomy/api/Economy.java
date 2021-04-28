@@ -100,4 +100,13 @@ public interface Economy {
      * @return true if successful
      */
     boolean transferBalance(OfflinePlayer sender, OfflinePlayer recipient, double amount);
+
+    /**
+     *
+     * @param sender sender
+     * @param recipient bank recipient
+     * @param amount amount to transfer
+     * @return true if successful
+     */
+    boolean transferBalance(OfflinePlayer sender, String recipient, double amount);
 }
