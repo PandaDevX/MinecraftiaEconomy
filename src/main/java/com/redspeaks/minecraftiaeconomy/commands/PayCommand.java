@@ -8,83 +8,34 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import java.util.Optional;
-
 @CommandInfo(name = "pay", permission = "economy.command.pay", requiresPlayer = true)
 public class PayCommand extends AbstractCommand {
 
     @Override
     public void execute(Player player, String[] args) {
         if(args.length < 2) {
-            player.sendMessage(ChatUtil.colorize("&7Correct usage: &c/pay <player / bank name> <amount> <your bank Optional>"));
+            player.sendMessage(ChatUtil.colorize("&7Correct usage: &c/pay <player> <amount>"));
             return;
         }
-        Optional<OfflinePlayer> target = Optional.ofNullable(Bukkit.getOfflinePlayer(args[0]));
-        Optional<String> bank = Optional.empty();
-        if(target.isPresent()) {
-            if(!target.get().hasPlayedBefore()) {
-                bank = Optional.ofNullable(args[0]);
-            }
-        }
+        OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
         if(!ChatUtil.isInt(args[1])) {
             player.sendMessage(ChatUtil.colorize("&7Please enter numbers only for amount"));
             return;
         }
+        if(!target.hasPlayedBefore()) {
+            player.sendMessage(ChatUtil.colorize("&7Target player never played before"));
+            return;
+        }
         double amount = Double.parseDouble(args[1]);
-        if(!bank.isPresent()) {
-            if(args.length != 3) {
-                if (MinecraftiaEconomyManager.getEconomy().transferBalance(player, target.get(), amount)) {
-                    player.sendMessage(ChatUtil.colorize("&7Successfully sent &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix() + " &7to player: &f" + target.get().getName()));
-                    if (target.get().isOnline()) {
-                        target.get().getPlayer().sendMessage(ChatUtil.colorize("&7Player: &f" + player.getDisplayName() + " &7sent you &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix()));
-                    }
-                } else {
-                    player.sendMessage(ChatUtil.colorize("&7Insufficient &cbalance"));
-                }
-            }
-            String bankName = args[2];
-            Optional<String> playerBank = MinecraftiaEconomyManager.getBank(player);
-            Optional<String> playerExtraBank = MinecraftiaEconomyManager.getExtraBank(player);
-            if(!playerBank.orElse("").equalsIgnoreCase(bankName) && !playerExtraBank.orElse("").equalsIgnoreCase(bankName)) {
-                player.sendMessage(ChatUtil.colorize("&7No matching &c" + args[2] + " &7from your bank accounts"));
-                return;
-            }
-            if (MinecraftiaEconomyManager.getBank().transfer(bankName, target.get(), amount)) {
-                player.sendMessage(ChatUtil.colorize("&7Successfully sent &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix() + " &7to player: &f" + target.get().getName()));
-                if (target.get().isOnline()) {
-                    target.get().getPlayer().sendMessage(ChatUtil.colorize("&7Player: &f" + player.getDisplayName() + " &7sent you &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix()));
-                }
-            } else {
-                player.sendMessage(ChatUtil.colorize("&7Insufficient &cbalance"));
-            }
-        } else {
-            if(args.length != 3) {
-                if (MinecraftiaEconomyManager.getEconomy().transferBalance(player, bank.get(), amount)) {
-                    player.sendMessage(ChatUtil.colorize("&7Successfully sent &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix() + " &7to bank: &f" + bank.get()));
-                    if (target.get().isOnline()) {
-                        target.get().getPlayer().sendMessage(ChatUtil.colorize("&7Player: &f" + player.getDisplayName() + " &7sent you &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix()));
-                    }
-                } else {
-                    player.sendMessage(ChatUtil.colorize("&7Insufficient &cbalance"));
-                }
-                return;
-            }
-            String bankName = args[2];
-            Optional<String> playerBank = MinecraftiaEconomyManager.getBank(player);
-            Optional<String> playerExtraBank = MinecraftiaEconomyManager.getExtraBank(player);
-            if(!playerBank.orElse("").equalsIgnoreCase(bankName) && !playerExtraBank.orElse("").equalsIgnoreCase(bankName)) {
-                player.sendMessage(ChatUtil.colorize("&7No matching &c" + args[2] + " &7from your bank accounts"));
-                return;
-            }
-            if (MinecraftiaEconomyManager.getBank().transfer(bankName, bank.get(), amount)) {
-                player.sendMessage(ChatUtil.colorize("&7Successfully sent &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix() + " &7to player: &f" + target.get().getName()));
-                if (target.get().isOnline()) {
-                    target.get().getPlayer().sendMessage(ChatUtil.colorize("&7Player: &f" + player.getDisplayName() + " &7sent you &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix()));
-                }
-            } else {
-                player.sendMessage(ChatUtil.colorize("&7Insufficient &cbalance"));
+        if(MinecraftiaEconomyManager.getEconomy().transferBalance(player, target, amount)) {
+            sendMessage(player, "&7Transaction: &aSuccessful");
+            sendMessage(player, "&7From: &a" + player.getDisplayName());
+            sendMessage(player, "&7To: &a" + target.getName());
+            sendMessage(player, "&7Amount: &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix());
+            if(target.isOnline()) {
+                sendMessage(target.getPlayer(), "&7Received: &f" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix());
+                sendMessage(target.getPlayer(), "&7Sender: &f" + player.getDisplayName());
             }
         }
-        return;
     }
 }

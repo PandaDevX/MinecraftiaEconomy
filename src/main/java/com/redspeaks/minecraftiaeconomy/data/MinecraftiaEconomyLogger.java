@@ -24,6 +24,7 @@ public class MinecraftiaEconomyLogger {
 
     public void info(String info) {
         if(bankName == null && bankAction == null) {
+
         }
     }
 }

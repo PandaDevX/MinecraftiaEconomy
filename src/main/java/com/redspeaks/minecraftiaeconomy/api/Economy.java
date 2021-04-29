@@ -17,18 +17,11 @@ public interface Economy {
 
     /**
      *
-     * @param player get amount from player wallet and banks
-     * @return Optional object
-     */
-    Optional<Double> getTotalBalance(OfflinePlayer player);
-
-    /**
-     *
      * @param player player included from this event
      * @param withBank set to true if you want to compute balance including bank accounts
      * @return get the balance to text with commas
      */
-    String getBalanceFormat(OfflinePlayer player, boolean withBank);
+    String getBalanceFormat(OfflinePlayer player);
 
     /**
      *
@@ -79,17 +72,8 @@ public interface Economy {
      * @param player player included from this event
      * @return Optional object that holds name of player bank account
      */
-    default Optional<String> getBank(OfflinePlayer player) {
-        return MinecraftiaEconomyManager.getBank(player);
-    }
-
-    /**
-     *
-     * @param player player included from this
-     * @return Optional object that holds name of player extra bank account
-     */
-    default Optional<String> getExtraBank(OfflinePlayer player) {
-        return MinecraftiaEconomyManager.getExtraBank(player);
+    default Optional<String> getBank(OfflinePlayer player, String name) {
+        return MinecraftiaEconomyManager.getBank(player, name);
     }
 
     /**

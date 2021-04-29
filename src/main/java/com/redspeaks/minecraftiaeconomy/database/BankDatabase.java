@@ -1,15 +1,15 @@
 package com.redspeaks.minecraftiaeconomy.database;
 
-import com.redspeaks.minecraftiaeconomy.MinecraftiaEconomy;
 import com.redspeaks.minecraftiaeconomy.api.Bank;
 import com.redspeaks.minecraftiaeconomy.api.MinecraftiaEconomyManager;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.scheduler.BukkitScheduler;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class BankDatabase {
 
@@ -29,47 +29,81 @@ public class BankDatabase {
         }
     }
 
-    public void saveData(final HashMap<String, Double> map, final HashMap<String, String> bankOwnership) {
-        if(map.isEmpty())return;
-        if(DatabaseManager.getConnection() == null) return;
-        scheduler.runTaskAsynchronously(MinecraftiaEconomy.getInstance(), () -> {
-           try(PreparedStatement ps = preparedStatement("INSERT INTO banks(name,balance,owner) VALUES (?, ?, ?) ON DUPLICATE KEY REPLACE banks(name,balance,owner) VALUES (?, ?, ?);")) {
-               for(String name : map.keySet()) {
-                   ps.setString(1, name);
-                   ps.setDouble(2, map.getOrDefault(name, 0D));
-                   ps.setString(3, bankOwnership.get(name));
-                   ps.setString(4, name);
-                   ps.setDouble(5, map.getOrDefault(name, 0D));
-                   ps.setString(6, bankOwnership.get(name));
-                   ps.executeUpdate();
-               }
-               map.clear();
-           }catch (SQLException e) {
-               e.printStackTrace();
-           }
-        });
-    }
-
-    public void loadData(final DataHandler dataHandler) {
-        if(DatabaseManager.getConnection() == null) return;
-        scheduler.runTaskAsynchronously(MinecraftiaEconomy.getInstance(), () -> {
-            try(PreparedStatement ps = preparedStatement("SELECT * FROM banks")) {
-                final ResultSet resultSet = ps.executeQuery();
-                scheduler.runTask(MinecraftiaEconomy.getInstance(), () -> {
-                   dataHandler.onQueryDone(resultSet);
-                });
-            }catch (SQLException e) {
-                e.printStackTrace();
+    public Set<String> getBanks(OfflinePlayer player) {
+        Set<String> set = new HashSet<>();
+        try (PreparedStatement ps = preparedStatement("SELECT * FROM banks WHERE owner=?")) {
+            ps.setString(1, player.getUniqueId().toString());
+            try(ResultSet resultSet = ps.executeQuery()) {
+                while (resultSet.next()) {
+                    set.add(resultSet.getString("name"));
+                }
             }
-        });
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return set;
     }
 
-    public boolean isEmpty() {
-        try(Statement s = DatabaseManager.getConnection().createStatement()) {
-            try(ResultSet r = s.executeQuery("SELECT COUNT(*) AS rowcount FROM banks")) {
-                r.next();
-                int count = r.getInt("rowcount");
-                if(count > 0) {
+    public double getBalance(String name) {
+        try(PreparedStatement ps = preparedStatement("SELECT * FROM banks WHERE name=?")) {
+            ps.setString(1, name);
+            try(ResultSet resultSet = ps.executeQuery()) {
+                return resultSet.getDouble("balance");
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public String getOwner(String name) {
+        try(PreparedStatement ps = preparedStatement("SELECT * FROM banks WHERE name=?")) {
+            ps.setString(1, name);
+            try(ResultSet resultSet = ps.executeQuery()) {
+                return resultSet.getString("owner");
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void changeOwner(String name, OfflinePlayer owner) {
+        try(PreparedStatement ps = preparedStatement("UPDATE banks SET owner=? WHERE name=?")) {
+            ps.setString(1, owner.getUniqueId().toString());
+            ps.setString(2, name);
+            ps.executeUpdate();
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setMoney(String name, double amount) {
+        try(PreparedStatement ps = preparedStatement("INSERT INTO banks(name,balance) VALUES (?,?) ON DUPLICATE KEY UPDATE name balance=?")) {
+            ps.setString(1, name);
+            ps.setDouble(2, amount);
+            ps.executeUpdate();
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void create(String name, OfflinePlayer owner) {
+        try(PreparedStatement ps = preparedStatement("INSERT INTO banks(name,balance,owner) VALUES (?,?,?)")) {
+            ps.setString(1, name);
+            ps.setDouble(2, 0);
+            ps.setString(3, owner.getUniqueId().toString());
+            ps.executeUpdate();
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean exists(String name) {
+        try(PreparedStatement ps = preparedStatement("SELECT * FROM banks WHERE name=?")) {
+            ps.setString(1, name);
+            try(ResultSet resultSet = ps.executeQuery()) {
+                if(resultSet.next()) {
                     return true;
                 }
             }
@@ -79,7 +113,16 @@ public class BankDatabase {
         return false;
     }
 
-
+    public boolean delete(String name) {
+        try(PreparedStatement ps = preparedStatement("DELETE FROM banks WHERE name=?")) {
+            ps.setString(1, name);
+            ps.executeUpdate();
+            return true;
+        }catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 
     public PreparedStatement preparedStatement(String statement) throws SQLException {

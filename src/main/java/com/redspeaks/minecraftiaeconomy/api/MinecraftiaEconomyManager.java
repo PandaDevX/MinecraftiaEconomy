@@ -5,6 +5,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @SuppressWarnings("all")
 public class MinecraftiaEconomyManager {
@@ -18,36 +20,36 @@ public class MinecraftiaEconomyManager {
         return MinecraftiaEconomy.getInstance().getEconomy();
     }
 
-    public static Optional<String> getBank(OfflinePlayer player) {
-        return MinecraftiaEconomy.getInstance().getEconomyDatabase().getBank(player);
+    public static Optional<String> getBank(OfflinePlayer player, String name) {
+        Set<String> set = MinecraftiaEconomy.getInstance().getBankDatabase().getBanks(player);
+        if(set.contains(name)) {
+            return Optional.ofNullable(name);
+        }
+        return Optional.empty();
     }
 
-    public static Optional<String> getExtraBank(OfflinePlayer player) {
-        return MinecraftiaEconomy.getInstance().getEconomyDatabase().getExtraBank(player);
+    public static Set<String> getBanks(OfflinePlayer player) {
+        return MinecraftiaEconomy.getInstance().getBankDatabase().getBanks(player);
     }
 
     public static boolean bankExists(String name) {
-        return MinecraftiaEconomy.bankMap.containsKey(name);
+        return MinecraftiaEconomy.getInstance().getBankDatabase().exists(name);
     }
 
     public static Optional<OfflinePlayer> getBankOwner(String name) {
-        return Optional.ofNullable(Bukkit.getOfflinePlayer(MinecraftiaEconomy.bankOwnership.get(name)));
+        return Optional.ofNullable(Bukkit.getOfflinePlayer(UUID.fromString(MinecraftiaEconomy.getInstance().getBankDatabase().getOwner(name))));
     }
 
     public static boolean transferOwnership(String name, OfflinePlayer newOwner) {
         if(!bankExists(name)) {
             return false;
         }
-        if(!getBankOwner(name).isPresent()) {
-            return false;
-        }
         if(newOwner == null || !newOwner.hasPlayedBefore()) {
             return false;
         }
-        if(getBank(newOwner).isPresent() && getExtraBank(newOwner).isPresent()) {
+        if(MinecraftiaEconomy.getInstance().getBankDatabase().getBanks(newOwner).size() > 1) {
             return false;
         }
-        MinecraftiaEconomy.bankOwnership.put(name, newOwner.getUniqueId().toString());
         return true;
     }
 
