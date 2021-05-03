@@ -1,6 +1,8 @@
 package com.redspeaks.minecraftiaeconomy.commands.admin;
 
 import com.redspeaks.minecraftiaeconomy.api.*;
+import com.redspeaks.minecraftiaeconomy.data.Actions;
+import com.redspeaks.minecraftiaeconomy.data.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
@@ -46,6 +48,8 @@ public class MoneyCommand extends AbstractCommand {
                 sendMessage(sender, "&7Successfully given money to: &f" + target.getName());
                 sendMessage(sender, "&7Amount: &f" + ChatUtil.commas(amount) + economy.getSuffix());
 
+                Logger.log(Actions.PlayerAction.SET_BALANCE, target.getPlayer()).info("&7Admin: &6[&a" + sender.getName() + "&6], &7Amount: &a+&f" + amount);
+
                 if(target.isOnline()) {
                     sendMessage(target.getPlayer(), "&f+&a" + ChatUtil.commas(amount) + economy.getSuffix());
                     Random random = new Random();
@@ -61,6 +65,7 @@ public class MoneyCommand extends AbstractCommand {
                 economy.setBalance(target, economy.getBalance(target).orElse(0D) - amount);
                 sendMessage(sender, "&7Successfully taken money from: &f" + target.getName());
                 sendMessage(sender, "&7Amount: &f" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix());
+                Logger.log(Actions.PlayerAction.SET_BALANCE, target.getPlayer()).info("&7Admin: &6[&a" + sender.getName() + "&6], &7Amount: &c-&f" + amount);
                 if(target.isOnline()) {
                     sendMessage(target.getPlayer(), "&f-&c" + ChatUtil.commas(amount) + economy.getSuffix());
                     Random random = new Random();
@@ -76,6 +81,7 @@ public class MoneyCommand extends AbstractCommand {
                 economy.setBalance(target, amount);
                 sendMessage(sender, "&7Successfully set player balance of: &f" + target.getName());
                 sendMessage(sender, "&7Amount: &f" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix());
+                Logger.log(Actions.PlayerAction.SET_BALANCE, target.getPlayer()).info("&7Admin: &6[&a" + sender.getName() + "&6], &7New Balance: &f" + amount);
                 if(target.isOnline()) {
                     sendMessage(target.getPlayer(), "&fNew Balance: &6" + ChatUtil.commas(amount) + economy.getSuffix());
                     Random random = new Random();

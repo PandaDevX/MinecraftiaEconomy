@@ -182,6 +182,19 @@ public final class MinecraftiaEconomy extends JavaPlugin {
             }
 
             @Override
+            public Optional<Double> getTotalBalance(OfflinePlayer player) {
+                double wallet = getBalance(player).orElse(0D);
+                Set<String> banks = getBankDatabase().getBanks(player);
+                double bankTotal = 0;
+                if(!banks.isEmpty()) {
+                    for(String bank : banks) {
+                        bankTotal += getBankDatabase().getBalance(bank);
+                    }
+                }
+                return Optional.of(bankTotal + wallet);
+            }
+
+            @Override
             public String getBalanceFormat(OfflinePlayer player) {
                 return ChatUtil.commas(getBalance(player).orElse(0D)) + getSuffix();
             }

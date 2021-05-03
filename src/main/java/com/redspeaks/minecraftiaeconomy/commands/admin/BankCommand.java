@@ -1,6 +1,9 @@
 package com.redspeaks.minecraftiaeconomy.commands.admin;
 
+import com.redspeaks.minecraftiaeconomy.MinecraftiaEconomy;
 import com.redspeaks.minecraftiaeconomy.api.*;
+import com.redspeaks.minecraftiaeconomy.data.Actions;
+import com.redspeaks.minecraftiaeconomy.data.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
@@ -23,7 +26,7 @@ public class BankCommand extends AbstractCommand {
             return;
         }
         if(args.length < 2) {
-            sendCorrectArguments(sender, "bank info <owner / account>", "bank create <owner> <account>", "bank delete <account>", "bank assign <player> <account>",
+            sendCorrectArguments(sender, "bank info <bank/player> <name>", "bank create <owner> <account>", "bank delete <account>", "bank assign <player> <account>",
                     "bank transfer <account> <bank/player> <name> <amount>",
                     "bank set <account> <amount>", "bank give <name> <amount>");
             return;
@@ -31,6 +34,30 @@ public class BankCommand extends AbstractCommand {
 
         String subCommand = args[0];
 
+
+        if(subCommand.equalsIgnoreCase("info")) {
+            if(args.length != 3) {
+                sendCorrectUsage(sender, "bank info <bank/player> <name>");
+                return;
+            }
+            String recipient = args[1];
+            if(recipient.equalsIgnoreCase("player")) {
+                OfflinePlayer target = Bukkit.getOfflinePlayer(args[2]);
+                if(!target.hasPlayedBefore()) {
+                    sendMessage(sender, "&7Player &c" + args[1] + " &7never played the server before");
+                    return;
+                }
+                Logger.showLogs(sender, target);
+                return;
+            }
+            String bank = args[2];
+            if(!MinecraftiaEconomyManager.bankExists(bank)) {
+                sendMessage(sender, "&7No matching &c" + bank + " &7found in database");
+                return;
+            }
+            Logger.showLogs(sender, bank);
+            return;
+        }
 
         if(subCommand.equalsIgnoreCase("set")) {
             if(!sender.hasPermission(node + subCommand.toLowerCase())) {
@@ -51,6 +78,9 @@ public class BankCommand extends AbstractCommand {
             sendMessage(sender, "&7Bank Set: &aSuccessful");
             sendMessage(sender, "&7Bank: &a" + account);
             sendMessage(sender, "&7New Balance: &a" + amount);
+
+            Logger.log(Actions.BankAction.SET_BALANCE, account).info("&7Initiated by: [&6Admin: &a" + sender.getName() + "&6]");
+
             return;
         }
 
@@ -75,6 +105,8 @@ public class BankCommand extends AbstractCommand {
             sendMessage(sender, "&7Bank: &a" + account);
             sendMessage(sender, "&7Added: &a" + amount);
             sendMessage(sender, "&7New Balance: &a" + MinecraftiaEconomyManager.getBank().getBalance(account));
+
+            Logger.log(Actions.BankAction.SET_BALANCE, account).info("&7Initiated by: [&6Admin: &a" + sender.getName() + "&6]");
             return;
         }
 
@@ -110,6 +142,9 @@ public class BankCommand extends AbstractCommand {
                     sendMessage(sender, "&7From: &b" + bank);
                     sendMessage(sender, "&7To player: &b" + target.getName());
                     sendMessage(sender, "&7Amount: &b" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix());
+
+                    Logger.log(Actions.BankAction.SEND_TO_PLAYER, bank).info("&7Recipient: &6[&a" + target.getName() + "&6]");
+                    Logger.log(Actions.PlayerAction.SEND_BY_BANK, (Player)sender).info("&7Recipient: &6[&a" + target.getName() + "&6]");
                 } else {
                     sendMessage(sender, "&7Bank Transfer: &cUnsuccessful");
                     sendMessage(sender, "&7Possible Errors:");
@@ -128,6 +163,9 @@ public class BankCommand extends AbstractCommand {
                     sendMessage(sender, "&7From: &b" + bank);
                     sendMessage(sender, "&7To bank: &b" + args[3]);
                     sendMessage(sender, "&7Amount: &b" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix());
+
+                    Logger.log(Actions.BankAction.SEND_TO_BANK, bank).info("&7Recipient: &6[&a" + args[3] + "&6]");
+                    Logger.log(Actions.PlayerAction.SEND_BY_BANK, (Player)sender).info("&7Recipient bank: &6[&a" + args[3] + "&6]");
                 } else {
                     sendMessage(sender, "&7Bank Transfer: &cUnsuccessful");
                     sendMessage(sender, "&7Possible Errors:");
@@ -161,6 +199,8 @@ public class BankCommand extends AbstractCommand {
                 sendMessage(sender, "&7Creation: &aSuccessful");
                 sendMessage(sender, "&7Bank: &6" + name);
                 sendMessage(sender, "&7Assigned to: &6" + owner.getName());
+
+                Logger.log(Actions.BankAction.CREATED, name).info("&7Created by: &6[Admin: &a" + sender.getName() + "&6], &7Assigned to: &6[&a" + owner.getName() +"&6]");
 
                 if(owner.isOnline()) {
                     sendMessage(owner.getPlayer(), "&7Bank: &6" + name + " &7has been assigned to you");
@@ -203,6 +243,8 @@ public class BankCommand extends AbstractCommand {
                 sendMessage(sender, "&7Assigned to: &6" + owner.getName());
                 sendMessage(sender, "&7Previous owner: &6" + previousOwner.get().getName());
 
+                Logger.log(Actions.BankAction.ASSIGNED, name).info("&7New owner: &6[&a" + owner.getName() + "&6]");
+
                 if(owner.isOnline()) {
                     sendMessage(owner.getPlayer(), "&7Bank: &6" + name + " &7has been assigned to you");
                     Random random = new Random();
@@ -235,6 +277,8 @@ public class BankCommand extends AbstractCommand {
                 sendMessage(sender, "&7Delete: &aSuccessful");
                 sendMessage(sender, "&7Bank: &6" + name);
                 sendMessage(sender, "&7Assigned to: &6" + owner.get().getName());
+
+                Logger.log(Actions.BankAction.DELETED, name).info("&7Owner: &6[&a" + owner.get().getName() + "&6]");
             } else {
                 sendMessage(sender, "&7Assign: &cUnsuccessful");
                 sendMessage(sender, "&7Possible errors:");

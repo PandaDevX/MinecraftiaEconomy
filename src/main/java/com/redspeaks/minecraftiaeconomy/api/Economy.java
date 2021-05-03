@@ -93,4 +93,11 @@ public interface Economy {
      * @return true if successful
      */
     boolean transferBalance(OfflinePlayer sender, String recipient, double amount);
+
+    /**
+     *
+     * @param player player
+     * @return get the total balance of player
+     */
+    Optional<Double> getTotalBalance(OfflinePlayer player);
 }

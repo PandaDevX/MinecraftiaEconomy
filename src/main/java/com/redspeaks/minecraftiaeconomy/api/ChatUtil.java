@@ -1,5 +1,6 @@
 package com.redspeaks.minecraftiaeconomy.api;
 
+import com.redspeaks.minecraftiaeconomy.MinecraftiaEconomy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -72,5 +73,9 @@ public class ChatUtil {
             temp.put(aa.getKey(), aa.getValue());
         }
         return temp;
+    }
+
+    public static String getEconomyFormat(double amount) {
+        return commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix();
     }
 }

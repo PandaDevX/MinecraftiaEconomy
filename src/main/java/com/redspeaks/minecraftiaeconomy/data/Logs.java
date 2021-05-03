@@ -6,6 +6,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Logs {
 
@@ -44,5 +46,21 @@ public class Logs {
         }catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public LinkedList<String> getLogs(String name) {
+        return new LinkedList<>(config.getStringList(name));
+    }
+
+    public void addLog(String path, String log) {
+        if(getLogs(path).size() >= 5) {
+            getLogs(path).removeFirst();
+            getLogs(path).add(log);
+            set(path, getLogs(path));
+        } else {
+            getLogs(path).add(log);
+            set(path, getLogs(path));
+        }
+
     }
 }
