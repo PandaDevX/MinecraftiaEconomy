@@ -1,9 +1,6 @@
 package com.redspeaks.minecraftiaeconomy.data;
 
-import com.redspeaks.minecraftiaeconomy.api.ChatUtil;
-import com.redspeaks.minecraftiaeconomy.api.MinecraftiaEconomyManager;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 public class MinecraftiaEconomyLogger {
 
@@ -28,13 +25,12 @@ public class MinecraftiaEconomyLogger {
     public void info(String info) {
         if(player != null) {
             if (bankName == null) {
-                logs.addLog(player.getUniqueId().toString(), "&7Action: " + playerAction.getAction() + " &7Initiator: &b" + player.getName() + info);
+                logs.addLog(player.getUniqueId().toString(), "&bAction: &7" + playerAction.getAction() + " by " + info);
             } else {
-                logs.addLog(player.getUniqueId().toString(), "&7Action: " + playerAction.getAction() + " &7Initiator: &b" + player.getName() + info);
-                logs.addLog(player.getUniqueId().toString(), "&7Bank name: &b" + bankName);
+                logs.addLog(player.getUniqueId().toString(), "&bAction: &7" + playerAction.getAction() + " by " + info);
             }
         } else {
-            logs.addLog(bankName, "&7Action: " + bankAction.getAction() + info + "&7Bank name: &b" + bankName);
+            logs.addLog(bankName, "&bAction: &7" + bankAction.getAction() + info);
         }
 
     }

@@ -7,16 +7,25 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseManager {
-    
-    private final static String HOST = MinecraftiaEconomy.getInstance().getConfig().getString("MySQL.host");
-    private final static String PORT = MinecraftiaEconomy.getInstance().getConfig().getString("MySQL.port");
-    private final static String DATABASE = MinecraftiaEconomy.getInstance().getConfig().getString("MySQL.database");
-    private final static String USER = MinecraftiaEconomy.getInstance().getConfig().getString("MySQL.user");
-    private final static String PASS = MinecraftiaEconomy.getInstance().getConfig().getString("MySQL.pass");
+
+    private final String HOST;
+    private final String PORT;
+    private final String DATABASE;
+    private final String USER;
+    private final String PASS;
+    public DatabaseManager(MinecraftiaEconomy plugin) {
+        this.HOST = plugin.getConfig().getString("MySQL.host");
+        this.PORT = plugin.getConfig().getString("MySQL.port");
+        this.DATABASE = plugin.getConfig().getString("MySQL.database");
+        this.USER = plugin.getConfig().getString("MySQL.user");
+        this.PASS = plugin.getConfig().getString("MySQL.pass");
+    }
+
+
     private static Connection connection = null;
 
-    public static void setup() throws SQLException {
-        connection = DriverManager.getConnection("jdbc://" + HOST + ":" + PORT + "/" + DATABASE + "?useSSL=false",
+    public void setup() throws SQLException {
+        connection = DriverManager.getConnection("jdbc:mysql://" + HOST + ":" + PORT + "/" + DATABASE + "?useSSL=false",
                     USER, PASS);
     }
 

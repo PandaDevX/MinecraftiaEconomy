@@ -48,10 +48,13 @@ public class BankDatabase {
         try(PreparedStatement ps = preparedStatement("SELECT * FROM banks WHERE name=?")) {
             ps.setString(1, name);
             try(ResultSet resultSet = ps.executeQuery()) {
-                return resultSet.getDouble("balance");
+                if(resultSet.next()) {
+                    return resultSet.getDouble("balance");
+                }
             }
         }catch (SQLException e) {
             e.printStackTrace();
+            return 0;
         }
         return 0;
     }
@@ -60,10 +63,13 @@ public class BankDatabase {
         try(PreparedStatement ps = preparedStatement("SELECT * FROM banks WHERE name=?")) {
             ps.setString(1, name);
             try(ResultSet resultSet = ps.executeQuery()) {
-                return resultSet.getString("owner");
+                if(resultSet.next()) {
+                    return resultSet.getString("owner");
+                }
             }
         }catch (SQLException e) {
             e.printStackTrace();
+            return null;
         }
         return null;
     }
@@ -106,11 +112,13 @@ public class BankDatabase {
                 if(resultSet.next()) {
                     return true;
                 }
+                return false;
             }
         }catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
-        return false;
+
     }
 
     public boolean delete(String name) {

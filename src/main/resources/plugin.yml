@@ -1,4 +1,4 @@
-name: Minecraftia Economy
+name: Minecraftia_Economy
 version: ${project.version}
 main: com.redspeaks.minecraftiaeconomy.MinecraftiaEconomy
 api-version: 1.16

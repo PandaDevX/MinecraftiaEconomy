@@ -9,9 +9,12 @@
 # exception - admin commands ( you can always set the amount whatever you want )
 loans: false
 
+# starter money
+starter: 0
+
 # database
 MySQL:
-  host: 'locahost'
+  host: 'localhost'
   port: '3306'
   database: 'mydb'
   user: 'user'

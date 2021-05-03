@@ -54,12 +54,14 @@ public class Logs {
 
     public void addLog(String path, String log) {
         if(getLogs(path).size() >= 5) {
-            getLogs(path).removeFirst();
-            getLogs(path).add(log);
-            set(path, getLogs(path));
+            LinkedList<String> list = getLogs(path);
+            list.removeFirst();
+            list.add(log);
+            set(path, list);
         } else {
-            getLogs(path).add(log);
-            set(path, getLogs(path));
+            LinkedList<String> list = getLogs(path);
+            list.add(log);
+            set(path, list);
         }
 
     }

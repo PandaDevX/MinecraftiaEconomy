@@ -5,14 +5,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Objects;
-
 public abstract class AbstractCommand implements CommandExecutor {
     private final CommandInfo info;
 
     public AbstractCommand() {
         info = getClass().getDeclaredAnnotation(CommandInfo.class);
-        Objects.requireNonNull(info, "Command info could not be absent");
     }
 
 

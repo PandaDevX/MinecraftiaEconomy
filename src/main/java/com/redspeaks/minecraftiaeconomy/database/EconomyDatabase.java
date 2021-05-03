@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.scheduler.BukkitScheduler;
 import java.sql.*;
+import java.util.HashMap;
 
 public class EconomyDatabase {
 
@@ -25,11 +26,26 @@ public class EconomyDatabase {
         }
     }
 
+    public HashMap<String, Double> retrieveDatas() {
+        HashMap<String, Double> hashMap = new HashMap<>();
+        try (PreparedStatement ps = preparedStatement("SELECT * FROM economy")) {
+            try(ResultSet resultSet = ps.executeQuery()) {
+                while(resultSet.next()) {
+                    hashMap.put(resultSet.getString("uuid"), resultSet.getDouble("balance"));
+                }
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return hashMap;
+    }
     public double getBalance(OfflinePlayer player) {
         try(PreparedStatement ps = preparedStatement("SELECT * FROM economy WHERE uuid=?")) {
             ps.setString(1, player.getUniqueId().toString());
             try(ResultSet resultSet = ps.executeQuery()) {
-                return resultSet.getDouble("balance");
+                if(resultSet.next()) {
+                    return resultSet.getDouble("balance");
+                }
             }
         }catch (SQLException e) {
             e.printStackTrace();
@@ -38,13 +54,22 @@ public class EconomyDatabase {
     }
 
     public void setMoney(OfflinePlayer player, double amount) {
-        try(PreparedStatement ps = preparedStatement("INSERT INTO economy(uuid,balance) VALUES (?,?) ON DUPLICATE KEY UPDATE economy balance=?")) {
-            ps.setString(1, player.getUniqueId().toString());
-            ps.setDouble(2, amount);
-            ps.setDouble(3, amount);
-            ps.executeUpdate();
-        }catch (SQLException e) {
-            e.printStackTrace();
+        if(!exists(player)) {
+            try(PreparedStatement ps = preparedStatement("INSERT INTO economy(uuid,balance) VALUES (?,?)")) {
+                ps.setString(1, player.getUniqueId().toString());
+                ps.setDouble(2, amount);
+                ps.executeUpdate();
+            }catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try(PreparedStatement ps = preparedStatement("UPDATE economy SET balance=? WHERE uuid=?")) {
+                ps.setDouble(1, amount);
+                ps.setString(2, player.getUniqueId().toString());
+                ps.executeUpdate();
+            }catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -36,7 +36,8 @@ public class PayCommand extends AbstractCommand {
                 sendMessage(player, "&7To: &a" + target.getName());
                 sendMessage(player, "&7Amount: &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix());
 
-                Logger.log(Actions.PlayerAction.SEND, player).info("&7Recipient: &6[&a" + target.getName() +"&6]");
+                Logger.log(Actions.PlayerAction.SEND, player).info("&bRecipient: &6[&a" + target.getName() +"&6]");
+                Logger.log(Actions.PlayerAction.RECEIVED, target).info("&bSender: &6[&a" + target.getName() + "&6]");
                 if (target.isOnline()) {
                     sendMessage(target.getPlayer(), "&7Received: &f" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix());
                     sendMessage(target.getPlayer(), "&7Sender: &f" + player.getDisplayName());
@@ -60,7 +61,8 @@ public class PayCommand extends AbstractCommand {
                 sendMessage(player, "&7From: &a" + player.getDisplayName());
                 sendMessage(player, "&7To: &a" + bank);
                 sendMessage(player, "&7Amount: &a" + ChatUtil.commas(amount) + MinecraftiaEconomyManager.getEconomy().getSuffix());
-                Logger.log(Actions.PlayerAction.SEND, player).info("&7Recipient bank: &6[&a" + bank +"&6]");
+                Logger.log(Actions.PlayerAction.SEND, player).info("&bRecipient bank: &6[&a" + bank +"&6]");
+                Logger.log(Actions.BankAction.RECEIVED_FROM_PLAYER, bank).info("&bSender: &6[&a" + player.getName() + "&6]");
             } else {
                 sendMessage(player, "&7Insufficient funds");
             }

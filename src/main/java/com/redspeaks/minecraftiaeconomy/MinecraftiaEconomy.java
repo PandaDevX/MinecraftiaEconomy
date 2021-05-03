@@ -10,6 +10,7 @@ import com.redspeaks.minecraftiaeconomy.data.Logs;
 import com.redspeaks.minecraftiaeconomy.database.BankDatabase;
 import com.redspeaks.minecraftiaeconomy.database.DatabaseManager;
 import com.redspeaks.minecraftiaeconomy.database.EconomyDatabase;
+import com.redspeaks.minecraftiaeconomy.listener.JoinListener;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -30,9 +31,10 @@ public final class MinecraftiaEconomy extends JavaPlugin {
     @Override
     public void onEnable() {
         getLogger().info("Trying to connect to database");
+        saveDefaultConfig();
 
         try {
-            DatabaseManager.setup();
+            new DatabaseManager(this).setup();
         }catch (SQLException e) {
             e.printStackTrace();
         }
@@ -47,7 +49,6 @@ public final class MinecraftiaEconomy extends JavaPlugin {
 
         // load config and mysql data
         getLogger().info("Loading config files...");
-        saveDefaultConfig();
         logs = new Logs(this);
         logs.setup();
 
@@ -61,18 +62,22 @@ public final class MinecraftiaEconomy extends JavaPlugin {
 
 
         getLogger().info("Everything has been loaded");
+
+        new JoinListener(this);
     }
 
     private void registerCommands() {
-        List<AbstractCommand> list = Arrays.asList(new BalanceCommand(), new BalTopCommand(), new PayCommand(), new BankCommand(), new MoneyCommand());
+        AbstractCommand balanceCommand = new BalanceCommand();
+        AbstractCommand baltopCommand = new BalTopCommand();
+        AbstractCommand payCommand = new PayCommand();
+        AbstractCommand bankCommand = new BankCommand();
+        AbstractCommand moneyCommand = new MoneyCommand();
 
-        Iterator<AbstractCommand> iterator = list.iterator();
-        while (iterator.hasNext()) {
-            AbstractCommand command = iterator.next();
-            getCommand(command.getInfo().name()).setExecutor(command);
-        }
-        list = null;
-        iterator = null;
+        getCommand(balanceCommand.getInfo().name()).setExecutor(balanceCommand);
+        getCommand(baltopCommand.getInfo().name()).setExecutor(baltopCommand);
+        getCommand(payCommand.getInfo().name()).setExecutor(payCommand);
+        getCommand(bankCommand.getInfo().name()).setExecutor(bankCommand);
+        getCommand(moneyCommand.getInfo().name()).setExecutor(moneyCommand);
     }
 
     @Override
@@ -252,8 +257,6 @@ public final class MinecraftiaEconomy extends JavaPlugin {
             }
         };
     }
-
-
 
 
     public Bank getBank() {

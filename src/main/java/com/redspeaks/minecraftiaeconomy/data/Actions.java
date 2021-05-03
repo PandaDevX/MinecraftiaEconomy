@@ -8,7 +8,8 @@ public class Actions {
         RECEIVED("Received money"),
         SET_BALANCE("Balance updated"),
         SEND_BY_BANK("Send money from bank"),
-        RECEIVED_BY_BANK("Receive money to bank");
+        RECEIVED_BY_BANK("Receive money to bank"),
+        BANK_DELETED("Unassigned a bank");
 
         String action;
         PlayerAction(String action) {

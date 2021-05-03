@@ -11,12 +11,12 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 import java.util.UUID;
 
-@CommandInfo(name = "balance", permission = "economy.command.balancetop", requiresPlayer = true)
+@CommandInfo(name = "balancetop", permission = "economy.command.balancetop", requiresPlayer = true)
 public class BalTopCommand extends AbstractCommand {
 
     @Override
     public void execute(Player player, String[] args) {
-        HashMap<String, Double> sortedMap = ChatUtil.reverseOrder(MinecraftiaEconomy.map);
+        HashMap<String, Double> sortedMap = ChatUtil.reverseOrder(MinecraftiaEconomy.getInstance().getEconomyDatabase().retrieveDatas());
         int count = 1;
         player.sendMessage(ChatUtil.colorize("&7---- &6Top Balance Holders &7----"));
         for(String uuid : sortedMap.keySet()) {
