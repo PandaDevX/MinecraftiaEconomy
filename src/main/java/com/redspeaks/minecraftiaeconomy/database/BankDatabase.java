@@ -1,5 +1,6 @@
 package com.redspeaks.minecraftiaeconomy.database;
 
+import com.redspeaks.minecraftiaeconomy.MinecraftiaEconomy;
 import com.redspeaks.minecraftiaeconomy.api.Bank;
 import com.redspeaks.minecraftiaeconomy.api.MinecraftiaEconomyManager;
 import org.bukkit.Bukkit;
@@ -17,7 +18,6 @@ public class BankDatabase {
     private Bank bank = MinecraftiaEconomyManager.getBank();
 
     public BankDatabase() {
-        if(DatabaseManager.getConnection() == null) return;
         try(PreparedStatement ps = preparedStatement("" +
                 "CREATE TABLE IF NOT EXISTS banks " +
                 "(name VARCHAR(100) NOT NULL, balance DOUBLE PRECISION, owner VARCHAR(100), PRIMARY KEY(name)" +
@@ -66,12 +66,12 @@ public class BankDatabase {
                 if(resultSet.next()) {
                     return resultSet.getString("owner");
                 }
+                return null;
             }
         }catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
-        return null;
     }
 
     public void changeOwner(String name, OfflinePlayer owner) {
@@ -134,6 +134,6 @@ public class BankDatabase {
 
 
     public PreparedStatement preparedStatement(String statement) throws SQLException {
-        return DatabaseManager.getConnection().prepareStatement(statement);
+        return MinecraftiaEconomy.getInstance().getDatabaseManager().getConnection().prepareStatement(statement);
     }
 }

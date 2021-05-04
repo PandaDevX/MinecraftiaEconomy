@@ -7,7 +7,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.List;
 
 public class Logs {
 
@@ -49,6 +48,7 @@ public class Logs {
     }
 
     public LinkedList<String> getLogs(String name) {
+        config = YamlConfiguration.loadConfiguration(file);
         return new LinkedList<>(config.getStringList(name));
     }
 

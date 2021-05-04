@@ -22,15 +22,15 @@ public class DatabaseManager {
     }
 
 
-    private static Connection connection = null;
+    private Connection connection = null;
 
-    public void setup() throws SQLException {
-        connection = DriverManager.getConnection("jdbc:mysql://" + HOST + ":" + PORT + "/" + DATABASE + "?useSSL=false",
+    public Connection getConnection() throws SQLException {
+        if(connection == null) {
+            return connection = DriverManager.getConnection("jdbc:mysql://" + HOST + ":" + PORT + "/" + DATABASE + "?useSSL=false",
                     USER, PASS);
-    }
-
-    public static Connection getConnection() {
+        }
         return connection;
     }
+
 
 }

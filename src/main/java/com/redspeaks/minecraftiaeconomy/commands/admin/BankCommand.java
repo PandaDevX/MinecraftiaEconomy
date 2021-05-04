@@ -163,8 +163,8 @@ public class BankCommand extends AbstractCommand {
                     Logger.log(Actions.BankAction.SEND_TO_BANK, bank).info("&bRecipient: &6[&a" + args[3] + "&6]");
                     Logger.log(Actions.PlayerAction.SEND_BY_BANK, (Player)sender).info("&bRecipient bank: &6[&a" + args[3] + "&6]");
                     Logger.log(Actions.BankAction.RECEIVED_FROM_BANK, args[3]).info("&bFrom: &6[&a" + bank + "&6]");
-                    if(MinecraftiaEconomyManager.getBankOwner(args[3]).isPresent()) {
-                        Logger.log(Actions.PlayerAction.RECEIVED_BY_BANK, MinecraftiaEconomyManager.getBankOwner(args[3]).get()).info("&bFrom: &6[&a" + bank + "&6]");
+                    if(MinecraftiaEconomyManager.getBankOwner(args[3]) != null) {
+                        Logger.log(Actions.PlayerAction.RECEIVED_BY_BANK, MinecraftiaEconomyManager.getBankOwner(args[3])).info("&bFrom: &6[&a" + bank + "&6]");
                     }
                 } else {
                     sendMessage(sender, "&7Bank Transfer: &cUnsuccessful");
@@ -241,12 +241,12 @@ public class BankCommand extends AbstractCommand {
                 return;
             }
 
-            Optional<OfflinePlayer> previousOwner = MinecraftiaEconomyManager.getBankOwner(name);
+            OfflinePlayer previousOwner = MinecraftiaEconomyManager.getBankOwner(name);
             if(bank.transferOwnerShip(name, owner)) {
                 sendMessage(sender, "&7Assign: &aSuccessful");
                 sendMessage(sender, "&7Bank: &6" + name);
                 sendMessage(sender, "&7Assigned to: &6" + owner.getName());
-                sendMessage(sender, "&7Previous owner: &6" + previousOwner.get().getName());
+                sendMessage(sender, "&7Previous owner: &6" + previousOwner.getName());
 
                 Logger.log(Actions.BankAction.ASSIGNED, name).info("&bNew owner: &6[&a" + owner.getName() + "&6]");
 
@@ -271,21 +271,21 @@ public class BankCommand extends AbstractCommand {
                 return;
             }
             String name = args[1];
-            Optional<OfflinePlayer> owner = MinecraftiaEconomyManager.getBankOwner(name);
+            OfflinePlayer owner = MinecraftiaEconomyManager.getBankOwner(name);
             if(bank.delete(name)) {
-                if(owner.isPresent() && owner.get().isOnline()) {
-                    sendMessage(owner.get().getPlayer(), "&7Bank: &6" + name + " &7has been unassigned to you");
+                if(owner.hasPlayedBefore() && owner.isOnline()) {
+                    sendMessage(owner.getPlayer(), "&7Bank: &6" + name + " &7has been unassigned to you");
                     Random random = new Random();
-                    owner.get().getPlayer().playSound(owner.get().getPlayer().getLocation(), Sound.values()[random.nextInt(Sound.values().length)], 1.0f, 1.0f);
+                    owner.getPlayer().playSound(owner.getPlayer().getLocation(), Sound.values()[random.nextInt(Sound.values().length)], 1.0f, 1.0f);
                     random = null;
                 }
                 sendMessage(sender, "&7Delete: &aSuccessful");
                 sendMessage(sender, "&7Bank: &6" + name);
-                sendMessage(sender, "&7Assigned to: &6" + owner.get().getName());
+                sendMessage(sender, "&7Assigned to: &6" + owner.getName());
 
                 Logger.log(Actions.BankAction.DELETED, name).info("&bAdmin: &6[&a" + sender.getName() + "&6]");
-                if(MinecraftiaEconomyManager.getBankOwner(name).isPresent()) {
-                    Logger.log(Actions.PlayerAction.BANK_DELETED, MinecraftiaEconomyManager.getBankOwner(name).get()).info("&bAdmin: &6[&a" + sender.getName() + "&6]");
+                if(MinecraftiaEconomyManager.getBankOwner(name).hasPlayedBefore()) {
+                    Logger.log(Actions.PlayerAction.BANK_DELETED, MinecraftiaEconomyManager.getBankOwner(name)).info("&bAdmin: &6[&a" + sender.getName() + "&6]");
                 }
             } else {
                 sendMessage(sender, "&7Assign: &cUnsuccessful");

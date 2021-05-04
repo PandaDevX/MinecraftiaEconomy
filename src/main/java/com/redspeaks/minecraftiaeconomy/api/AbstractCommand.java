@@ -1,5 +1,6 @@
 package com.redspeaks.minecraftiaeconomy.api;
 
+import com.redspeaks.minecraftiaeconomy.MinecraftiaEconomy;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,6 +16,7 @@ public abstract class AbstractCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        MinecraftiaEconomy.getInstance().reloadConfig();
         if(!sender.hasPermission(info.permission())) {
             sender.sendMessage(ChatUtil.colorize("&7Missing required &cpermission"));
             return true;

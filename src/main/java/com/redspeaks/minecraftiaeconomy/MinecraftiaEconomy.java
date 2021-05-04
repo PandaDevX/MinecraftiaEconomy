@@ -33,12 +33,6 @@ public final class MinecraftiaEconomy extends JavaPlugin {
         getLogger().info("Trying to connect to database");
         saveDefaultConfig();
 
-        try {
-            new DatabaseManager(this).setup();
-        }catch (SQLException e) {
-            e.printStackTrace();
-        }
-
         getLogger().info("Successfully connected to database");
 
         // instance
@@ -91,6 +85,10 @@ public final class MinecraftiaEconomy extends JavaPlugin {
         bankDatabase =null;
         economyDatabase = null;
         getLogger().info("Successfully closed");
+    }
+
+    public DatabaseManager getDatabaseManager() {
+        return new DatabaseManager(this);
     }
 
      public Logs getLogFile() {

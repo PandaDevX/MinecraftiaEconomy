@@ -36,8 +36,10 @@ public class MinecraftiaEconomyManager {
         return MinecraftiaEconomy.getInstance().getBankDatabase().exists(name);
     }
 
-    public static Optional<OfflinePlayer> getBankOwner(String name) {
-        return Optional.ofNullable(Bukkit.getOfflinePlayer(UUID.fromString(MinecraftiaEconomy.getInstance().getBankDatabase().getOwner(name))));
+    public static OfflinePlayer getBankOwner(String name) {
+        String owner = MinecraftiaEconomy.getInstance().getBankDatabase().getOwner(name);
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(MinecraftiaEconomy.getInstance().getBankDatabase().getOwner(name)));
+        return offlinePlayer;
     }
 
     public static boolean transferOwnership(String name, OfflinePlayer newOwner) {
@@ -50,6 +52,7 @@ public class MinecraftiaEconomyManager {
         if(MinecraftiaEconomy.getInstance().getBankDatabase().getBanks(newOwner).size() > 1) {
             return false;
         }
+        MinecraftiaEconomy.getInstance().getBankDatabase().changeOwner(name, newOwner);
         return true;
     }
 

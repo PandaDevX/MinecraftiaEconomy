@@ -32,7 +32,7 @@ public class Logger {
         player.sendMessage(ChatUtil.colorize("&7Bank: &6" + path));
         player.sendMessage(ChatUtil.colorize("&7Current Balance: &f" + ChatUtil.getEconomyFormat(MinecraftiaEconomyManager.getBank().getBalance(path).orElse(0D))));
         player.sendMessage(ChatUtil.colorize("&7Showing logs of bank: &6" + path));
-        player.sendMessage(ChatUtil.colorize("&7Assigned to: &6" + MinecraftiaEconomyManager.getBankOwner(path).get().getName()));
+        player.sendMessage(ChatUtil.colorize("&7Assigned to: &6" + MinecraftiaEconomyManager.getBankOwner(path).getName()));
         player.sendMessage(ChatUtil.colorize("&7Last &65 &7transactions:"));
         for(String content : logs.get().getStringList(path)) {
             player.sendMessage(ChatUtil.colorize("&6 * " + content));

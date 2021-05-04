@@ -1,5 +1,6 @@
 package com.redspeaks.minecraftiaeconomy.database;
 
+import com.redspeaks.minecraftiaeconomy.MinecraftiaEconomy;
 import com.redspeaks.minecraftiaeconomy.api.Economy;
 import com.redspeaks.minecraftiaeconomy.api.MinecraftiaEconomyManager;
 import org.bukkit.Bukkit;
@@ -14,7 +15,6 @@ public class EconomyDatabase {
     private Economy economy = MinecraftiaEconomyManager.getEconomy();
 
     public EconomyDatabase() {
-        if(DatabaseManager.getConnection() == null) return;
         try(PreparedStatement ps = preparedStatement("" +
                 "CREATE TABLE IF NOT EXISTS economy " +
                 "(uuid CHAR(36) NOT NULL, balance DOUBLE PRECISION, PRIMARY KEY(uuid)" +
@@ -87,6 +87,6 @@ public class EconomyDatabase {
 
 
     public PreparedStatement preparedStatement(String statement) throws SQLException {
-        return DatabaseManager.getConnection().prepareStatement(statement);
+        return MinecraftiaEconomy.getInstance().getDatabaseManager().getConnection().prepareStatement(statement);
     }
 }
